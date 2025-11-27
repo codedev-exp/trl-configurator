@@ -14,6 +14,7 @@ const Configurator = () => {
   const [insertType, setInsertType] = useState("ALU");
   const [panelColor, setPanelColor] = useState("BIA");
   const [selectedLayoutIndex, setSelectedLayoutIndex] = useState(0);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   // --- ŁADOWANIE DANYCH ---
   useEffect(() => {
@@ -69,6 +70,93 @@ const Configurator = () => {
   });
 
   const isConfigurationValid = cartItems.length > 0 && cartItems.every(item => item.found);
+
+  // --- FUNKCJA DODAWANIA DO KOSZYKA ---
+  const handleAddToCart = async () => {
+    setAddingToCart(true);
+
+    // Przygotuj dane dla PHP (tylko to, co potrzebne: ID i ilość)
+    // Grupujemy te same produkty (np. 3 panele 120cm to jeden wpis z qty: 3)
+    const itemsPayload = [];
+    
+    // Zliczanie ilości
+    cartItems.forEach(item => {
+        if (!item.found) return;
+        
+        const existing = itemsPayload.find(p => 
+            p.id_product === item.data.id_produktu_glównego && 
+            p.id_product_attribute === item.data.id_kombinacji
+        );
+
+        if (existing) {
+            existing.qty += 1;
+        } else {
+            itemsPayload.push({
+                id_product: item.data.id_produktu_glównego,
+                id_product_attribute: item.data.id_kombinacji,
+                qty: 1
+            });
+        }
+    });
+    
+    // Jeśli z jakiegoś powodu pusto
+    if (itemsPayload.length === 0) {
+        alert("Błąd: Brak dostępnych produktów do dodania.");
+        setAddingToCart(false);
+        return;
+    }
+
+    try {
+        const url = window.sl_ajax_url; // URL z szablonu .tpl
+        
+        if (!url) {
+            console.error('Brak URL do API koszyka:', window.sl_ajax_url);
+            alert("Błąd: Brak URL do API koszyka. Sprawdź konfigurację modułu.\n\nSprawdź konsolę przeglądarki (F12) dla szczegółów.");
+            setAddingToCart(false);
+            return;
+        }
+
+        console.log('Wysyłanie zapytania do:', url);
+        console.log('Dane:', itemsPayload);
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin', // Ważne dla PrestaShop - wysyła cookies
+            body: JSON.stringify({ items: itemsPayload })
+        });
+
+        console.log('Odpowiedź status:', response.status, response.statusText);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Błąd HTTP:', response.status, errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
+        }
+
+        const result = await response.json();
+        console.log('Wynik:', result);
+
+        if (result.success) {
+            // Przekieruj do koszyka
+            window.location.href = window.location.origin + '/koszyk?action=show'; 
+            // Lub tylko komunikat:
+            // alert("Dodano do koszyka!");
+        } else {
+            alert("Wystąpił błąd: " + result.message);
+        }
+
+    } catch (err) {
+        console.error('Błąd podczas dodawania do koszyka:', err);
+        console.error('URL:', window.sl_ajax_url);
+        console.error('Dane:', itemsPayload);
+        alert("Błąd komunikacji z serwerem.\n\nSzczegóły w konsoli przeglądarki (F12).\n\nBłąd: " + err.message);
+    } finally {
+        setAddingToCart(false);
+    }
+  };
 
   // --- RENDEROWANIE ---
   if (loading) return <div className="alert alert-info">Ładowanie konfiguratora...</div>;
@@ -217,11 +305,11 @@ const Configurator = () => {
                 )}
                 
                 <button 
-                    className="btn btn-success btn-block btn-lg" 
-                    disabled={!isConfigurationValid}
-                    onClick={() => alert("Tutaj nastąpi dodanie ID produktów do koszyka: " + cartItems.map(i => i.data.id_kombinacji).join(', '))}
+                    className="btn btn-success btn-block btn-lg mt-3" 
+                    disabled={!isConfigurationValid || addingToCart}
+                    onClick={handleAddToCart}
                 >
-                    Dodaj do Koszyka
+                    {addingToCart ? 'Dodawanie...' : 'Dodaj do koszyka'}
                 </button>
             </div>
         </div>
