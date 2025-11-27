@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
   build: {
-    // Budujemy do folderu 'dist'
-    outDir: 'dist',
-    emptyOutDir: true,
+    // Budujemy bezpośrednio do folderu modułu PrestaShop
+    outDir: path.resolve(__dirname, '../ps_slatwall/assets/js'),
+    emptyOutDir: false, // Nie czyść folderu, bo mogą tam być inne pliki
     rollupOptions: {
       input: 'src/main.jsx',
       output: {

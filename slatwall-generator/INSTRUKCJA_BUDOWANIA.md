@@ -18,14 +18,18 @@ Po zainstalowaniu zależności, zbuduj projekt:
 npm run build
 ```
 
-To utworzy folder `dist/` z plikiem `build.js` - to jest skompilowana wersja Twojej aplikacji React.
+**Plik `build.js` zostanie automatycznie wygenerowany w folderze `../ps_slatwall/assets/js/build.js`**
+
+Nie musisz już ręcznie kopiować pliku - wszystko trafia bezpośrednio do modułu!
 
 ## Krok 3: Wdrożenie na serwer
 
-1. **Skopiuj plik `build.js`** z folderu `dist/` na Twój komputer
+1. **Skopiuj cały folder `ps_slatwall/`** na Twój komputer (z katalogu głównego projektu)
 2. **Zaloguj się na serwer FTP** Twojego PrestaShop
-3. **Przejdź do katalogu**: `/modules/ps_slatwall/assets/js/`
-4. **Wgraj plik `build.js`** do tego katalogu (nadpisze stary, jeśli istnieje)
+3. **Przejdź do katalogu**: `/modules/`
+4. **Wgraj cały folder `ps_slatwall/`** do tego katalogu (nadpisze istniejący moduł)
+
+**Alternatywnie:** Możesz wgrać tylko zmienione pliki, ale najprościej jest przerzucić cały folder modułu.
 
 ## Krok 4: Wyczyść cache PrestaShop
 

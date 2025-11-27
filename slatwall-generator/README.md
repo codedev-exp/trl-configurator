@@ -23,14 +23,16 @@ Zbuduj plik produkcyjny:
 npm run build
 ```
 
-Po zbudowaniu, plik `dist/build.js` będzie gotowy do wgrania na serwer.
+**Plik `build.js` zostanie automatycznie wygenerowany w folderze `../ps_slatwall/assets/js/build.js`**
 
 ## Wdrożenie
 
-1. Zbuduj projekt: `npm run build`
-2. Skopiuj plik `dist/build.js` do `/modules/ps_slatwall/assets/js/build.js` na serwerze PrestaShop
+1. Zbuduj projekt: `npm run build` (plik trafia automatycznie do modułu)
+2. Skopiuj cały folder `ps_slatwall/` na serwer do `/modules/ps_slatwall/`
 3. Wyczyść cache PrestaShop
 4. Odśwież stronę konfiguratora
+
+**Uwaga:** Cały folder modułu `ps_slatwall/` można przerzucić na serwer - wszystko jest gotowe!
 
 ## Struktura projektu
 
