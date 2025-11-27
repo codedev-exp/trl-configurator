@@ -19,9 +19,9 @@
     </script>
     
     {if isset($base_url)}
-        <script src="{$base_url}{$module_uri}assets/js/app.js" defer></script>
+        <script src="{$base_url}{$module_uri}assets/js/build.js" defer></script>
     {else}
-        <script src="{$module_uri}assets/js/app.js" defer></script>
+        <script src="{$module_uri}assets/js/build.js" defer></script>
     {/if}
 {/block}
 

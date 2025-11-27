@@ -83,11 +83,10 @@ class Ps_Slatwall extends Module
                 ['media' => 'all', 'priority' => 150]
             );
             
-            // Tutaj w przyszłości będzie skompilowany React (build.js)
-            // Na razie ładujemy prosty skrypt testowy
+            // Ładujemy skompilowany React (build.js)
             $this->context->controller->registerJavascript(
                 'modules-slatwall-app',
-                'modules/' . $this->name . '/assets/js/app.js',
+                'modules/' . $this->name . '/assets/js/build.js',
                 ['position' => 'bottom', 'priority' => 150]
             );
         }
