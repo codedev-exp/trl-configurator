@@ -13,9 +13,14 @@
     {/if}
     
     <script>
-        // Definiujemy zmienną PRZED załadowaniem skryptu
+        // Definiujemy zmienne PRZED załadowaniem skryptu
         var sl_catalog_url = "{$catalog_url|escape:'javascript':'UTF-8'}";
-        console.log('Konfigurator: URL katalogu ustawiony na:', sl_catalog_url);
+        var sl_ajax_url = "{$ajax_url|escape:'javascript':'UTF-8'}"; // <--- DODAJ TĘ LINIĘ
+        
+        console.log('Konfigurator Config:', {
+            catalog: sl_catalog_url,
+            ajax: sl_ajax_url
+        });
     </script>
     
     {if isset($base_url)}
