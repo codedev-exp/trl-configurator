@@ -289,9 +289,12 @@ const Configurator = () => {
                 <div className="col">
                     <label>Wsuwka</label>
                     <select className="form-control" value={insertType} onChange={e => setInsertType(e.target.value)}>
-                        <option value="ALU">Aluminium</option>
-                        <option value="SZA">Szara</option>
-                        <option value="CZA">Czarna</option>
+                        <option value="ALU">Aluminiowa (ALU)</option>
+                        <option value="SZA">Plastik Szara (SZA)</option>
+                        <option value="CZA">Plastik Czarna (CZA)</option>
+                        <option value="BIA">Plastik Biała (BIA)</option>
+                        <option value="GRA">Plastik Grafit (GRA)</option>
+                        <option value="BEZ">Bez wsuwki (BEZ)</option>
                     </select>
                 </div>
              </div>
@@ -304,6 +307,7 @@ const Configurator = () => {
                     <option value="ALA">Alaska (ALA)</option>
                     <option value="KLO">Klon (KLO)</option>
                     <option value="GRA">Grafit (GRA)</option>
+                    <option value="POP">Popiel (POP)</option>
                  </select>
              </div>
            </div>
