@@ -15,11 +15,14 @@
     <script>
         // Definiujemy zmienne PRZED załadowaniem skryptu
         var sl_catalog_url = "{$catalog_url|escape:'javascript':'UTF-8'}";
-        var sl_ajax_url = "{$ajax_url|escape:'javascript':'UTF-8'}"; // <--- DODAJ TĘ LINIĘ
+        // Naprawiamy &amp; na & w URL (Smarty escape'uje & do &amp; w HTML)
+        var sl_ajax_url_raw = "{$ajax_url}";
+        var sl_ajax_url = sl_ajax_url_raw.replace(/&amp;/g, '&');
         
         console.log('Konfigurator Config:', {
             catalog: sl_catalog_url,
-            ajax: sl_ajax_url
+            ajax: sl_ajax_url,
+            ajax_raw: sl_ajax_url_raw
         });
     </script>
     

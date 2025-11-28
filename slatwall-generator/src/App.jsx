@@ -136,15 +136,36 @@ const Configurator = () => {
             throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 100)}`);
         }
 
-        const result = await response.json();
+        // Sprawdź czy odpowiedź nie jest pusta
+        const responseText = await response.text();
+        console.log('Odpowiedź tekstowa:', responseText);
+        
+        if (!responseText || responseText.trim() === '') {
+            throw new Error('Pusta odpowiedź z serwera. Sprawdź, czy metoda displayAjaxAddToCart() jest wywoływana.');
+        }
+
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('Błąd parsowania JSON:', parseError);
+            console.error('Otrzymany tekst:', responseText);
+            throw new Error('Nieprawidłowa odpowiedź JSON z serwera: ' + responseText.substring(0, 200));
+        }
+        
         console.log('Wynik:', result);
 
         if (result.success) {
             // Przekieruj do koszyka
             window.location.href = window.location.origin + '/koszyk?action=show'; 
-            // Lub tylko komunikat:
-            // alert("Dodano do koszyka!");
+        } else if (result.partial) {
+            // Częściowy sukces - niektóre produkty dodane
+            const confirmMsg = `${result.message}\n\nCzy chcesz przejść do koszyka mimo błędów?`;
+            if (window.confirm(confirmMsg)) {
+                window.location.href = window.location.origin + '/koszyk?action=show';
+            }
         } else {
+            // Całkowity błąd
             alert("Wystąpił błąd: " + result.message);
         }
 
