@@ -15,6 +15,7 @@ const Configurator = () => {
   const [panelColor, setPanelColor] = useState("BIA");
   const [selectedLayoutIndex, setSelectedLayoutIndex] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [showVideoPopup, setShowVideoPopup] = useState(false);
 
   // --- ŁADOWANIE DANYCH ---
   useEffect(() => {
@@ -183,7 +184,89 @@ const Configurator = () => {
   if (loading) return <div className="alert alert-info">Ładowanie konfiguratora...</div>;
   if (error) return <div className="alert alert-danger">Błąd: {error}</div>;
 
+  // URL do filmiku
+  const getVideoUrl = () => {
+    if (window.sl_module_uri && window.sl_base_url) {
+      return window.sl_base_url + window.sl_module_uri + 'assets/images/TraderLine_Anim.mp4';
+    } else if (window.sl_module_uri) {
+      return window.sl_module_uri + 'assets/images/TraderLine_Anim.mp4';
+    } else if (window.sl_catalog_url) {
+      return window.sl_catalog_url.replace('/catalog.json', '/images/TraderLine_Anim.mp4');
+    }
+    return '/modules/ps_slatwall/assets/images/TraderLine_Anim.mp4';
+  };
+  const videoUrl = getVideoUrl();
+
   return (
+    <>
+      {/* POPUP Z FILMIKIEM */}
+      {showVideoPopup && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          zIndex: 10000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: '12px',
+            padding: '20px',
+            maxWidth: '800px',
+            width: '100%',
+            position: 'relative'
+          }}>
+            <button
+              onClick={() => setShowVideoPopup(false)}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                background: '#333',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '50%',
+                width: '30px',
+                height: '30px',
+                cursor: 'pointer',
+                fontSize: '18px',
+                lineHeight: '1',
+                zIndex: 10001
+              }}
+            >
+              ×
+            </button>
+            <h3 style={{marginTop: 0, marginBottom: '15px'}}>Instrukcja konfiguracji paneli Spacewall</h3>
+            <video
+              src={videoUrl}
+              autoPlay
+              controls
+              style={{
+                width: '100%',
+                borderRadius: '8px'
+              }}
+            >
+              Twoja przeglądarka nie obsługuje odtwarzania wideo.
+            </video>
+            <div style={{marginTop: '15px', textAlign: 'center'}}>
+              <button
+                onClick={() => setShowVideoPopup(false)}
+                className="btn-add-cart"
+                style={{maxWidth: '200px', margin: '0 auto'}}
+              >
+                Zamknij
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     <div className="sl-configurator row" style={{marginTop: '20px'}}>
       
       {/* LEWA KOLUMNA: WIZUALIZACJA + OPCJE (3/4 szerokości) */}
@@ -319,6 +402,57 @@ const Configurator = () => {
       {/* PRAWA KOLUMNA: SIDEBAR Z PODSUMOWANIEM (1/4 szerokości) */}
       <div className="col-md-3">
         <div className="options-sidebar">
+          {/* BANNER Z FILMIKIEM */}
+          <div 
+            onClick={() => setShowVideoPopup(true)}
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '20px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              textAlign: 'center',
+              color: 'white'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            }}
+          >
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '60px',
+              height: '60px',
+              background: 'rgba(255,255,255,0.2)',
+              borderRadius: '50%',
+              marginBottom: '12px'
+            }}>
+              <svg 
+                width="32" 
+                height="32" 
+                viewBox="0 0 24 24" 
+                fill="white"
+                style={{marginLeft: '3px'}}
+              >
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            <div style={{fontSize: '16px', fontWeight: 600, marginBottom: '5px'}}>
+              Zobacz konfigurację
+            </div>
+            <div style={{fontSize: '14px', opacity: 0.9}}>
+              paneli Spacewall
+            </div>
+          </div>
+
           {/* PODSUMOWANIE */}
           <div className={`summary-box ${!isConfigurationValid ? 'bg-danger' : ''}`} style={!isConfigurationValid ? {background: '#dc3545'} : {}}>
               <h5 className="section-title" style={{color: 'white', borderColor: 'rgba(255,255,255,0.2)'}}>Podsumowanie</h5>
@@ -346,6 +480,7 @@ const Configurator = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

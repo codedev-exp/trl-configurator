@@ -15,6 +15,8 @@
     <script>
         // Definiujemy zmienne PRZED załadowaniem skryptu
         var sl_catalog_url = "{$catalog_url|escape:'javascript':'UTF-8'}";
+        var sl_module_uri = "{$module_uri|escape:'javascript':'UTF-8'}";
+        var sl_base_url = "{if isset($base_url)}{$base_url|escape:'javascript':'UTF-8'}{else}{/if}";
         // Naprawiamy &amp; na & w URL (Smarty escape'uje & do &amp; w HTML)
         var sl_ajax_url_raw = "{$ajax_url}";
         var sl_ajax_url = sl_ajax_url_raw.replace(/&amp;/g, '&');
@@ -22,7 +24,9 @@
         console.log('Konfigurator Config:', {
             catalog: sl_catalog_url,
             ajax: sl_ajax_url,
-            ajax_raw: sl_ajax_url_raw
+            ajax_raw: sl_ajax_url_raw,
+            module_uri: sl_module_uri,
+            base_url: sl_base_url
         });
     </script>
     
