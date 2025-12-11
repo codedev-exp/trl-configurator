@@ -1,3 +1,34 @@
+Analiza Twojego aktualnego kodu:
+React (src/App.jsx):
+
+✅ Logika Solvera: Jest zaimplementowana i importowana.
+
+✅ Brakujące Opcje: Widzę, że dodałeś już BIA, GRA, POP i BEZ do selektorów. Problem "brakującej białej wsuwki", o którym pisałeś, jest już rozwiązany w kodzie.
+
+✅ Koszyk: Funkcja handleAddToCart jest poprawnie napisana, wysyła POST do window.sl_ajax_url z payloadem items.
+
+Backend (init.php):
+
+✅ Metoda displayAjaxAddToCart jest gotowa, odbiera JSON i dodaje produkty pętlą.
+
+✅ Link $ajaxUrl jest poprawnie generowany i przekazywany do szablonu.
+
+Szablon (app.tpl):
+
+✅ Zmienna sl_ajax_url jest zdefiniowana globalnie (z fixem na &amp;), więc React będzie miał gdzie uderzyć.
+
+🚀 Co robimy dalej? (Faza 4: UI & "Look and Feel")
+Skoro "silnik" (React + PHP) jest gotowy i poprawny, a logika biznesowa uwzględnia wszystkie warianty, jedyne czego brakuje to wygląd. Obecny CSS (style.css) jest bardzo podstawowy i nie oddaje nowoczesnego charakteru projektu z konfigurator.jpg.
+
+Zajmijmy się teraz profesjonalnym stylowaniem.
+
+Poniżej przygotowałem kompletny kod CSS, który zmieni surowy formularz w nowoczesny konfigurator ze sticky sidebarem (pływającym podsumowaniem), ładnymi kafelkami i wizualizacją.
+
+KROK 1: Zaktualizuj plik ps_slatwall/assets/css/style.css
+Podmień całą zawartość tego pliku na poniższy kod:
+
+CSS
+
 /* --- Główny Kontener --- */
 #slatwall-root {
     font-family: 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -9,10 +40,9 @@
 
 /* --- Kolumny i Layout --- */
 .sl-configurator {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    /* gap: 30px;
-    width: 100%; */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
 }
 
 /* --- Lewa Kolumna: Wizualizacja --- */
@@ -31,15 +61,12 @@
     background-image: radial-gradient(#e1e4e8 1px, transparent 1px);
     background-size: 20px 20px;
     border-radius: 8px;
-    min-height: 100px;
-    height: auto;
+    min-height: 500px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     padding: 20px;
     box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-    gap: 2px;
-    /* Wysokość dostosuje się do najwyższego panelu + padding */
 }
 
 /* Elementy panelu w wizualizacji */
@@ -47,39 +74,8 @@
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     position: relative;
-    /* Tekstura panelu - powtarzana w poziomie i pionie */
-    background: #fff url('../images/tekstura.png') repeat;
-    background-size: auto 100%;
-    border: 1px solid #ced4da;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    font-size: 11px;
-    color: #495057;
-    overflow: hidden;
-}
-
-.sl-panel-visual.invalid {
-    background: #fff url('../images/tekstura.png') repeat;
-    background-size: auto 100%;
-    position: relative;
-}
-
-.sl-panel-visual.invalid::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 207, 207, 0.6);
-    z-index: 1;
-}
-
-.sl-panel-visual.invalid > * {
-    position: relative;
-    z-index: 2;
+    /* Tekstura domyślna (Biały) */
+    background: #fff; 
 }
 
 /* Imitacja wsuwek */
@@ -120,28 +116,6 @@
     font-size: 0.9rem;
     color: #666;
     margin-bottom: 8px;
-    display: block;
-}
-
-.form-control {
-    display: block;
-    width: 100%;
-    padding: 8px 12px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #555;
-    background-color: #fff;
-    background-image: none;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-control:focus {
-    border-color: #2fb5d2;
-    box-shadow: 0 0 0 3px rgba(47, 181, 210, 0.1);
-    outline: 0;
 }
 
 .form-control-lg {
@@ -188,7 +162,6 @@
 .layout-radio {
     margin-right: 15px;
     transform: scale(1.2);
-    cursor: pointer;
 }
 
 /* --- Podsumowanie --- */
@@ -200,27 +173,12 @@
     margin-top: 30px;
 }
 
-.summary-box h5 {
-    color: white;
-    margin-bottom: 15px;
-}
-
-.summary-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 15px 0;
-}
-
 .summary-list li {
     padding: 5px 0;
     border-bottom: 1px solid rgba(255,255,255,0.1);
     font-size: 0.9rem;
     display: flex;
     justify-content: space-between;
-}
-
-.summary-list li:last-child {
-    border-bottom: none;
 }
 
 .btn-add-cart {
@@ -234,8 +192,6 @@
     margin-top: 20px;
     transition: background 0.2s;
     text-transform: uppercase;
-    color: white;
-    cursor: pointer;
 }
 
 .btn-add-cart:hover {
@@ -247,97 +203,72 @@
     cursor: not-allowed;
 }
 
-/* --- Alerty --- */
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-}
-
-.alert-info {
-    color: #31708f;
-    background-color: #d9edf7;
-    border-color: #bce8f1;
-}
-
-.alert-success {
-    color: #3c763d;
-    background-color: #dff0d8;
-    border-color: #d6e9c6;
-}
-
-.alert-danger {
-    color: #a94442;
-    background-color: #f2dede;
-    border-color: #ebccd1;
-}
-
-.alert-warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #ffeaa7;
-}
-
-/* --- Card --- */
-.card {
-    background: #fff;
-    border: 1px solid #eef0f2;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.card-body {
-    padding: 20px;
-}
-
-.card-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #f0f0f0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #444;
-}
-
 /* --- Responsywność --- */
 @media (max-width: 991px) {
     .options-sidebar {
         position: static; /* Na mobile sidebar nie może być sticky */
     }
-    
-    .sl-configurator {
-        flex-direction: column;
-    }
 }
+KROK 2: Drobne dopasowanie klas w src/App.jsx
+Aby ten CSS zadziałał idealnie, musisz dodać kilka klas CSS w swoim komponencie React. Nie zmienia to logiki, tylko nazwy klas.
 
-/* --- Row i Col dla Bootstrap --- */
-#slatwall-root .row {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    margin-left: -15px;
-    margin-right: -15px;
-}
+W pliku src/App.jsx zrób te zmiany (szukaj po fragmentach kodu):
 
-#slatwall-root .col-md-9, 
-#slatwall-root .col-md-3 {
-    position: relative;
-    width: 100%;
-    padding-left: 15px;
-    padding-right: 15px;
-}
+Zmień główny kontener na .options-sidebar:
 
-@media (min-width: 768px) {
-    #slatwall-root .col-md-9 {
-        flex: 0 0 75% !important;
-        max-width: 75% !important;
-    }
-    
-    #slatwall-root .col-md-3 {
-        flex: 0 0 25% !important;
-        max-width: 25% !important;
-    }
-}
+JavaScript
+
+// ZMIEŃ: <div className="col-md-5">
+// NA:
+<div className="col-md-5">
+  <div className="options-sidebar">
+(Pamiętaj o zamknięciu tego diva na samym dole, przed zamknięciem col-md-5)
+
+Zmień listę układów na .layout-selector:
+
+JavaScript
+
+// ZAMIAST: <div className="list-group mb-3">
+<div className="layout-selector">
+    {layouts.map((layout, idx) => (
+        <div 
+            key={layout.id}
+            className={`layout-option ${selectedLayoutIndex === idx ? 'active' : ''}`}
+            onClick={() => setSelectedLayoutIndex(idx)}
+        >
+            <input 
+                type="radio" 
+                checked={selectedLayoutIndex === idx} 
+                readOnly 
+                className="layout-radio"
+            />
+            <div>
+                <div style={{fontWeight:600}}>{layout.type}</div>
+                <small className="text-muted">{layout.modules.join(' + ')} cm</small>
+            </div>
+        </div>
+    ))}
+</div>
+Zmień sekcję wizualizacji:
+
+JavaScript
+
+// ZMIEŃ divy otaczające wizualizację na:
+<div className="visualizer-card">
+   <div className="visualizer-canvas">
+      {/* ... tutaj Twoja pętla mapująca moduły ... */}
+      <div className="sl-panel-visual" ... >
+         {/* ... */}
+      </div>
+   </div>
+</div>
+KROK 3: Finalny Build
+Zapisz zmiany w src/App.jsx.
+
+Zapisz nowy style.css.
+
+Uruchom npm run build lokalnie.
+
+Wgraj build.js i style.css na serwer.
+
+Jeśli to zrobisz, Twój konfigurator będzie funkcjonalnie kompletny (jak w instrukcji 4) i wizualnie atrakcyjny (zgodnie z Twoim projektem). To będzie Release Candidate 1.

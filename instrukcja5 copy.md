@@ -1,0 +1,4 @@
+- wyliczenia ze  jak jest 370 to powinno podpoiwedziec 2 panele  po 200 a drugi warinat  2 panele po 100 i jeden 200. 
+- tekstura w grafikach
+- dodac filmik
+- wyliczenia koszyka (przesylka itp)

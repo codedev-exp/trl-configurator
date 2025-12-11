@@ -186,55 +186,44 @@ const Configurator = () => {
   return (
     <div className="sl-configurator row" style={{marginTop: '20px'}}>
       
-      {/* LEWA KOLUMNA: WIZUALIZACJA */}
-      <div className="col-md-7">
-        <div style={{
-            background: '#e9ecef', 
-            padding: '40px 20px', 
-            borderRadius: '8px', 
-            minHeight: '400px',
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'center',
-            gap: '2px'
-        }}>
-           {currentLayout.modules.map((modWidth, i) => (
-             <div key={i} style={{
-               width: `${(modWidth / width) * 100}%`,
-               height: `${(parseInt(height) / 270) * 100}%`, // Skala wizualna
-               background: isConfigurationValid ? '#fff' : '#ffcfcf',
-               border: '1px solid #ced4da',
-               display: 'flex', 
-               alignItems: 'center', 
-               justifyContent: 'center',
-               fontSize: '11px',
-               color: '#495057',
-               flexDirection: 'column'
-             }}>
-               <strong>{modWidth}cm</strong>
-               {cartItems[i] && !cartItems[i].found && <span style={{color:'red'}}>Niedostępny</span>}
-             </div>
-           ))}
+      {/* LEWA KOLUMNA: WIZUALIZACJA + OPCJE (3/4 szerokości) */}
+      <div className="col-md-9">
+        {/* WIZUALIZACJA */}
+        <div className="visualizer-card">
+          <div className="visualizer-canvas">
+             {currentLayout.modules.map((modWidth, i) => (
+               <div 
+                 key={i} 
+                 className={`sl-panel-visual ${cartItems[i] && !cartItems[i].found ? 'invalid' : ''}`}
+                 style={{
+                   width: `${(modWidth / width) * 100}%`,
+                   height: `${parseInt(height)}px`, // Bezpośrednie mapowanie: 180cm = 180px
+                 }}
+               >
+                 <strong>{modWidth}cm</strong>
+                 {cartItems[i] && !cartItems[i].found && <span style={{color:'red', fontSize: '10px'}}>Niedostępny</span>}
+               </div>
+             ))}
+          </div>
+          <div className="text-center mt-3" style={{color: '#666'}}>
+             Całkowita szerokość zabudowy: <strong>{width} cm</strong>
+             {currentLayout.isCut && <span className="badge badge-warning ml-2">Wymaga docięcia</span>}
+          </div>
         </div>
-        <div className="text-center mt-2 text-muted">
-           Całkowita szerokość zabudowy: <strong>{width} cm</strong>
-           {currentLayout.isCut && <span className="badge badge-warning ml-2">Wymaga docięcia</span>}
-        </div>
-      </div>
 
-      {/* PRAWA KOLUMNA: OPCJE */}
-      <div className="col-md-5">
+        {/* OPCJE KONFIGURACJI */}
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '30px'}}>
         
         {/* SEKCJA 1: WYMIARY */}
-        <div className="card mb-3">
+        <div className="card">
           <div className="card-body">
-            <h5 className="card-title">1. Wymiary</h5>
+            <h5 className="section-title">1. Wymiary</h5>
             
             <div className="form-group">
               <label>Szerokość (cm)</label>
               <input 
                 type="number" 
-                className="form-control" 
+                className="form-control form-control-lg" 
                 value={width} 
                 onChange={e => setWidth(Number(e.target.value))}
                 step="10" min="40" max="1000"
@@ -242,23 +231,30 @@ const Configurator = () => {
             </div>
 
             {layouts.length > 0 ? (
-                <div className="form-group bg-light p-2 rounded">
-                    <label className="small text-muted">Sugerowany podział modułów:</label>
-                    {layouts.map((layout, idx) => (
-                    <div key={idx} className="custom-control custom-radio">
-                        <input 
-                            type="radio" 
-                            id={`layout-${idx}`} 
-                            name="layoutLayout"
-                            className="custom-control-input"
-                            checked={activeLayoutIndex === idx}
-                            onChange={() => setSelectedLayoutIndex(idx)}
-                        />
-                        <label className="custom-control-label" htmlFor={`layout-${idx}`}>
-                            {layout.type}: <strong>{layout.modules.join('+')}</strong>
-                        </label>
+                <div className="form-group">
+                    <label className="small text-muted" style={{fontWeight: 600}}>Sugerowany podział modułów:</label>
+                    <div className="layout-selector">
+                        {layouts.map((layout, idx) => (
+                        <div 
+                            key={idx} 
+                            className={`layout-option ${activeLayoutIndex === idx ? 'active' : ''}`}
+                            onClick={() => setSelectedLayoutIndex(idx)}
+                        >
+                            <input 
+                                type="radio" 
+                                id={`layout-${idx}`} 
+                                name="layoutLayout"
+                                className="layout-radio"
+                                checked={activeLayoutIndex === idx}
+                                onChange={() => setSelectedLayoutIndex(idx)}
+                            />
+                            <div>
+                                <div style={{fontWeight: 600}}>{layout.type}</div>
+                                <small style={{color: '#666'}}>{layout.modules.join(' + ')} cm</small>
+                            </div>
+                        </div>
+                        ))}
                     </div>
-                    ))}
                 </div>
             ) : (
                 <div className="alert alert-warning py-1 small">Brak możliwego układu dla tej szerokości.</div>
@@ -275,27 +271,31 @@ const Configurator = () => {
         </div>
 
         {/* SEKCJA 2: OPCJE */}
-        <div className="card mb-3">
+        <div className="card">
            <div className="card-body">
-             <h5 className="card-title">2. Wykończenie</h5>
-             <div className="form-row">
-                <div className="col">
-                    <label>Rozstaw</label>
-                    <select className="form-control" value={spacing} onChange={e => setSpacing(e.target.value)}>
-                        <option value="10">10 cm</option>
-                        <option value="15">15 cm</option>
-                    </select>
+             <h5 className="section-title">2. Wykończenie</h5>
+             <div style={{display: 'flex', gap: '15px'}}>
+                <div style={{flex: 1}}>
+                    <div className="form-group">
+                        <label>Rozstaw</label>
+                        <select className="form-control" value={spacing} onChange={e => setSpacing(e.target.value)}>
+                            <option value="10">10 cm</option>
+                            <option value="15">15 cm</option>
+                        </select>
+                    </div>
                 </div>
-                <div className="col">
-                    <label>Wsuwka</label>
-                    <select className="form-control" value={insertType} onChange={e => setInsertType(e.target.value)}>
-                        <option value="ALU">Aluminiowa (ALU)</option>
-                        <option value="SZA">Plastik Szara (SZA)</option>
-                        <option value="CZA">Plastik Czarna (CZA)</option>
-                        <option value="BIA">Plastik Biała (BIA)</option>
-                        <option value="GRA">Plastik Grafit (GRA)</option>
-                        <option value="BEZ">Bez wsuwki (BEZ)</option>
-                    </select>
+                <div style={{flex: 1}}>
+                    <div className="form-group">
+                        <label>Wsuwka</label>
+                        <select className="form-control" value={insertType} onChange={e => setInsertType(e.target.value)}>
+                            <option value="ALU">Aluminiowa (ALU)</option>
+                            <option value="SZA">Plastik Szara (SZA)</option>
+                            <option value="CZA">Plastik Czarna (CZA)</option>
+                            <option value="BIA">Plastik Biała (BIA)</option>
+                            <option value="GRA">Plastik Grafit (GRA)</option>
+                            <option value="BEZ">Bez wsuwki (BEZ)</option>
+                        </select>
+                    </div>
                 </div>
              </div>
              
@@ -313,32 +313,37 @@ const Configurator = () => {
            </div>
         </div>
 
-        {/* PODSUMOWANIE */}
-        <div className={`card text-white ${isConfigurationValid ? 'bg-secondary' : 'bg-danger'}`}>
-            <div className="card-body">
-                <h5 className="card-title">Podsumowanie</h5>
-                {isConfigurationValid ? (
-                    <ul className="list-unstyled small mb-3">
-                        {cartItems.map((item, i) => (
-                            <li key={i}>
-                                {item.width}x{height}cm ({item.data.id_kombinacji})
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="small">Wybrana kombinacja kolorów/wymiarów nie istnieje w katalogu.</p>
-                )}
-                
-                <button 
-                    className="btn btn-success btn-block btn-lg mt-3" 
-                    disabled={!isConfigurationValid || addingToCart}
-                    onClick={handleAddToCart}
-                >
-                    {addingToCart ? 'Dodawanie...' : 'Dodaj do koszyka'}
-                </button>
-            </div>
         </div>
+      </div>
 
+      {/* PRAWA KOLUMNA: SIDEBAR Z PODSUMOWANIEM (1/4 szerokości) */}
+      <div className="col-md-3">
+        <div className="options-sidebar">
+          {/* PODSUMOWANIE */}
+          <div className={`summary-box ${!isConfigurationValid ? 'bg-danger' : ''}`} style={!isConfigurationValid ? {background: '#dc3545'} : {}}>
+              <h5 className="section-title" style={{color: 'white', borderColor: 'rgba(255,255,255,0.2)'}}>Podsumowanie</h5>
+              {isConfigurationValid ? (
+                  <ul className="summary-list">
+                      {cartItems.map((item, i) => (
+                          <li key={i}>
+                              <span>{item.width}x{height}cm</span>
+                              <span style={{fontWeight: 600}}>ID: {item.data.id_kombinacji}</span>
+                          </li>
+                      ))}
+                  </ul>
+              ) : (
+                  <p className="small" style={{color: 'rgba(255,255,255,0.9)'}}>Wybrana kombinacja kolorów/wymiarów nie istnieje w katalogu.</p>
+              )}
+              
+              <button 
+                  className="btn-add-cart" 
+                  disabled={!isConfigurationValid || addingToCart}
+                  onClick={handleAddToCart}
+              >
+                  {addingToCart ? 'Dodawanie...' : 'Dodaj do koszyka'}
+              </button>
+          </div>
+        </div>
       </div>
     </div>
   );
